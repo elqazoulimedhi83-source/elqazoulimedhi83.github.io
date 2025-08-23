@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royale Casino - Cartes Joueurs</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+    <main class="player-management">
+        <h1>Gestion des Cartes Joueurs</h1>
+
+        <div class="form-section">
+            <h2>Créer ou modifier une carte</h2>
+            <form id="card-form">
+                <input type="hidden" id="card-to-edit-id">
+                <input type="text" id="input-name" placeholder="Nom et Prénom" required>
+                <input type="text" id="input-num" placeholder="Numéro de téléphone" required>
+                <input type="number" id="input-balance" placeholder="Solde initial (€)" min="0" required>
+                <button type="button" class="form-btn" id="add-card-btn">Ajouter une carte</button>
+                <button type="button" class="form-btn" id="save-card-btn" style="display: none;">Sauvegarder les modifications</button>
+            </form>
+        </div>
+
+        <div id="card-list" class="card-list-container"></div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Royale Casino. Tous droits réservés.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cardListContainer = document.getElementById('card-list');
+            const cardForm = document.getElementById('card-form');
+            const addCardBtn = document.getElementById('add-card-btn');
+            const saveCardBtn = document.getElementById('save-card-btn');
+            const inputName = document.getElementById('input-name');
+            const inputNum = document.getElementById('input-num');
+            const inputBalance = document.getElementById('input-balance');
+            const cardToEditId = document.getElementById('card-to-edit-id');
+            let cardData = [];
+            let nextCardId = 1;
+
+            function saveCards() {
+                localStorage.setItem('royale-casino-cards', JSON.stringify(cardData));
+            }
+
+            function loadCards() {
+                const storedData = localStorage.getItem('royale-casino-cards');
+                if (storedData) {
+                    cardData = JSON.parse(storedData);
+                    const lastCardId = cardData.reduce((max, card) => {
+                        const id = parseInt(card.id.split('-')[1]);
+                        return id > max ? id : max;
+                    }, 0);
+                    nextCardId = lastCardId + 1;
+                } else {
+                    cardData = [
+                        { id: 'card-1', name: 'LIAM COSTA', num: '06.95.64.51.48', balance: 70000 },
+                        { id: 'card-2', name: 'JEAN PAPIN', num: '06.58.18.38.26', balance: 10000 },
+                        { id: 'card-3', name: 'LÉO RICHARD', num: '06.97.57.43.57', balance: 15000 },
+                        { id: 'card-4', name: 'THOQUENNE BAPTISTE', num: '06.96.36.27.11', balance: 15000 },
+                        { id: 'card-5', name: 'LOUIS XRETYX', num: '06 43 86 30 90', balance: 10000 },
+                        { id: 'card-6', name: 'YOUSSEF MACRON', num: '06 64 13 87 62', balance: 30000 },
+                        { id: 'card-7', name: 'FRANK VIDAL', num: '06 48 24 52 39', balance: 15000 },
+                        { id: 'card-8', name: 'MATHIS XERTYX', num: '06 61 84 45 96', balance: 0 },
+                        { id: 'card-9', name: 'DMITTRI DMITTRI', num: '06 32 33 71 25', balance: 6000 }
+                    ];
+                }
+            }
+            
+            function createCardElement(data) {
+                return `
+                    <div class="card-container" id="${data.id}">
+                        <div class="player-card">
+                            <div class="card-header">
+                                <h2 class="card-name">${data.name}</h2>
+                                <i class="fa-solid fa-crown card-icon"></i>
+                            </div>
+                            <div class="info-group">
+                                <span class="label">Numéro :</span>
+                                <span class="value card-num">${data.num}</span>
+                            </div>
+                            <div class="info-group">
+                                <span class="label">Solde :</span>
+                                <span class="value card-balance">${data.balance.toLocaleString('fr-FR')} €</span>
+                            </div>
+                            <div class="balance-actions">
+                                <input type="number" class="balance-input" placeholder="Montant">
+                                <button class="add-balance-btn"><i class="fa-solid fa-plus"></i></button>
+                                <button class="remove-balance-btn"><i class="fa-solid fa-minus"></i></button>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <button class="download-btn">PNG</button>
+                            <button class="modify-btn" data-card-id="${data.id}">Modifier</button>
+                            <button class="delete-btn" data-card-id="${data.id}">Supprimer</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderCards() {
+                cardListContainer.innerHTML = '';
+                cardData.forEach(data => {
+                    cardListContainer.innerHTML += createCardElement(data);
+                });
+                attachActionListeners();
+            }
+
+            function attachActionListeners() {
+                document.querySelectorAll('.modify-btn').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const cardId = event.target.getAttribute('data-card-id');
+                        const card = cardData.find(c => c.id === cardId);
+                        
+                        document.querySelectorAll('.card-container').forEach(c => c.classList.remove('editing'));
+                        document.getElementById(cardId).classList.add('editing');
+
+                        inputName.value = card.name;
+                        inputNum.value = card.num;
+                        inputBalance.value = card.balance;
+                        
+                        cardToEditId.value = cardId;
+                        addCardBtn.style.display = 'none';
+                        saveCardBtn.style.display = 'inline-block';
+                    });
+                });
+                
+                document.querySelectorAll('.delete-btn').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const cardId = event.target.getAttribute('data-card-id');
+                        cardData = cardData.filter(c => c.id !== cardId);
+                        renderCards();
+                        saveCards();
+                    });
+                });
+
+                document.querySelectorAll('.download-btn').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const cardContainer = event.target.closest('.card-container');
+                        const cardId = cardContainer.id;
+                        const data = cardData.find(c => c.id === cardId);
+                        generatePNG(cardId, `carte-${data.name.replace(/\s/g, '-').toLowerCase()}.png`);
+                    });
+                });
+
+                document.querySelectorAll('.add-balance-btn').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const cardContainer = event.target.closest('.card-container');
+                        const cardId = cardContainer.id;
+                        const card = cardData.find(c => c.id === cardId);
+                        const amountInput = cardContainer.querySelector('.balance-input');
+                        const amount = parseFloat(amountInput.value);
+                        
+                        if (!isNaN(amount) && amount > 0) {
+                            card.balance += amount;
+                            renderCards();
+                            saveCards();
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.remove-balance-btn').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const cardContainer = event.target.closest('.card-container');
+                        const cardId = cardContainer.id;
+                        const card = cardData.find(c => c.id === cardId);
+                        const amountInput = cardContainer.querySelector('.balance-input');
+                        const amount = parseFloat(amountInput.value);
+                        
+                        if (!isNaN(amount) && amount > 0 && card.balance >= amount) {
+                            card.balance -= amount;
+                            renderCards();
+                            saveCards();
+                        } else if (card.balance < amount) {
+                            alert("Solde insuffisant !");
+                        }
+                    });
+                });
+            }
+
+            loadCards();
+            renderCards();
+
+            addCardBtn.addEventListener('click', () => {
+                const newCardData = {
+                    id: `card-${nextCardId++}`,
+                    name: inputName.value.toUpperCase(),
+                    num: inputNum.value,
+                    balance: parseFloat(inputBalance.value)
+                };
+                cardData.push(newCardData);
+                renderCards();
+                saveCards();
+                cardForm.reset();
+            });
+
+            saveCardBtn.addEventListener('click', () => {
+                const idToEdit = cardToEditId.value;
+                const indexToEdit = cardData.findIndex(c => c.id === idToEdit);
+
+                if (indexToEdit !== -1) {
+                    cardData[indexToEdit].name = inputName.value.toUpperCase();
+                    cardData[indexToEdit].num = inputNum.value;
+                    cardData[indexToEdit].balance = parseFloat(inputBalance.value);
+                    renderCards();
+                    saveCards();
+                    cardForm.reset();
+                    saveCardBtn.style.display = 'none';
+                    addCardBtn.style.display = 'inline-block';
+                }
+            });
+
+            window.generatePNG = function(cardId, fileName) {
+                const element = document.getElementById(cardId);
+                const originalActions = element.querySelector('.card-actions');
+                const originalBalance = element.querySelector('.balance-actions');
+
+                if (originalActions) originalActions.style.display = 'none';
+                if (originalBalance) originalBalance.style.display = 'none';
+
+                html2canvas(element).then(function(canvas) {
+                    const link = document.createElement('a');
+                    link.download = fileName;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+
+                    if (originalActions) originalActions.style.display = 'flex';
+                    if (originalBalance) originalBalance.style.display = 'block';
+                });
+            };
+        });
+    </script>
+</body>
+</html>

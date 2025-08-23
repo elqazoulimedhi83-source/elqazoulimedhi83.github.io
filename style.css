@@ -1,0 +1,310 @@
+/* Palette de couleurs et variables */
+:root {
+    --primary-color: #f0c541; /* Or vibrant */
+    --secondary-color: #2c3e50; /* Bleu nuit pour les accents */
+    --dark-bg: #0d0d0d; /* Noir profond */
+    --card-bg: #1a1a1a; /* Gris foncé pour les cartes */
+    --text-color: #f0f0f0; /* Blanc cassé */
+    --glow-effect: 0 0 10px rgba(240, 197, 65, 0.5); /* Effet de lueur dorée */
+    --gradient-card: linear-gradient(145deg, #2a2a2a, #111111);
+    --border-card: 2px solid var(--primary-color);
+}
+
+/* Base */
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: var(--dark-bg);
+    color: var(--text-color);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseGlow {
+    0% { box-shadow: 0 0 5px rgba(240, 197, 65, 0.3); }
+    50% { box-shadow: 0 0 20px rgba(240, 197, 65, 0.8); }
+    100% { box-shadow: 0 0 5px rgba(240, 197, 65, 0.3); }
+}
+
+/* Contenu principal */
+.player-management {
+    padding: 60px 40px;
+    text-align: center;
+    max-width: 1400px;
+    margin: auto;
+    animation: fadeIn 1.5s ease-out;
+}
+
+.player-management h1 {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+}
+
+/* Formulaires */
+.form-section {
+    background: var(--card-bg);
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 40px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.6);
+    animation: fadeIn 1s 0.2s backwards;
+}
+
+.form-section h2 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-top: 0;
+}
+
+#card-form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+}
+
+#card-form input {
+    background: #0d0d0d;
+    color: var(--text-color);
+    border: 1px solid #444;
+    padding: 12px 15px;
+    border-radius: 8px;
+    width: 220px;
+    transition: border-color 0.3s;
+}
+
+#card-form input::placeholder {
+    color: #888;
+}
+
+#card-form input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: var(--glow-effect);
+}
+
+.form-btn {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: transform 0.2s, background 0.3s;
+    text-transform: uppercase;
+    font-size: 0.9em;
+}
+
+#add-card-btn {
+    background: #34a853;
+    color: white;
+}
+#add-card-btn:hover {
+    background: #2b8442;
+    transform: translateY(-2px);
+}
+
+#save-card-btn {
+    background: #3c91e6;
+    color: white;
+}
+#save-card-btn:hover {
+    background: #307ac5;
+    transform: translateY(-2px);
+}
+
+/* Liste des cartes */
+.card-list-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+    animation: fadeIn 1s 0.4s backwards;
+}
+
+/* Carte individuelle */
+.card-container {
+    background: var(--gradient-card);
+    border: 2px solid transparent;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.7);
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+}
+
+.card-container.editing {
+    border-color: var(--primary-color);
+    animation: pulseGlow 1.5s infinite alternate;
+}
+
+.player-card {
+    position: relative;
+    padding: 20px;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.card-header h2 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin: 0;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.card-icon {
+    font-size: 2rem;
+    color: var(--primary-color);
+}
+
+.info-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px dashed #333;
+}
+
+.info-group:last-of-type {
+    border-bottom: none;
+}
+
+.label {
+    font-weight: 600;
+    color: #bbb;
+    font-size: 0.9em;
+}
+
+.value {
+    color: var(--text-color);
+    font-weight: 700;
+}
+
+.value.card-balance {
+    font-size: 1.2em;
+    color: #34a853;
+}
+
+/* Gestion du solde */
+.balance-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.balance-input {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #444;
+    border-radius: 5px;
+    background: #0d0d0d;
+    color: var(--text-color);
+}
+
+.balance-actions button {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.5em;
+    font-weight: bold;
+    cursor: pointer;
+    color: var(--dark-bg);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.balance-actions button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(240, 197, 65, 0.5);
+}
+
+.add-balance-btn {
+    background-color: #34a853;
+}
+
+.remove-balance-btn {
+    background-color: #e74c3c;
+}
+
+/* Boutons d'action */
+.card-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-around;
+    gap: 10px;
+}
+
+.card-actions button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9em;
+    transition: background 0.3s, transform 0.2s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+.download-btn {
+    background: #007bff;
+    color: white;
+}
+.download-btn:hover { background: #0056b3; transform: translateY(-2px); }
+
+.modify-btn {
+    background: var(--primary-color);
+    color: var(--dark-bg);
+}
+.modify-btn:hover { background: #d4a736; transform: translateY(-2px); }
+
+.delete-btn {
+    background: #e74c3c;
+    color: white;
+}
+.delete-btn:hover { background: #c0392b; transform: translateY(-2px); }
+
+/* Pied de page */
+footer {
+    text-align: center;
+    padding: 20px;
+    background: #1e1e1e;
+    color: #777;
+    margin-top: auto;
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .form-section form {
+        flex-direction: column;
+        align-items: center;
+    }
+    #card-form input {
+        width: 80%;
+    }
+}
